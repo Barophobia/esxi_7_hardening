@@ -71,6 +71,41 @@ To create one or more named user accounts (local ESXi user accounts), perform th
 5. Once added now select the Host, then select Actions followed by Permissions. 
 6. Assign the Administrator role to the user.
 
+### 4.6(L1) Ensure Active Directory is used for local user authentication
+To use AD for local user authentication, perform the following from the vSphere Web Client:
+1. Select the host
+2. Click on Configure then expand System.
+3. Select Authentication Services.
+4. Click Join Domain followed by the appropriate domain and credentials.
+5. Click OK
+
+Or
+
+PowerCLI:
+```
+Get-VMHost HOST1 | Get-VMHostAuthentication | Set-VMHostAuthentication -Domain domain.local -User Administrator -Password Passw0rd -JoinDomain
+```
+
+### 4.7(L1) Ensure only authorized users and groups belong to the esxAdminsGroup group
+To remove unauthorized users and groups belonging to esxAdminsGroup, perform the following steps after coordination between vSphere admins and Active Directory admins:
+1. Verify the setting of the esxAdminsGroup attribute.
+2. View the list of members for that Microsoft Active Directory group.
+3. Remove all unauthorized users and groups from that group.
+
+If full admin access for the AD ESX admins group is not desired, you can disable this behavior using the advanced host setting:
+*"Config.HostAgent.plugins.hostsvc.esxAdminsGroupAutoAdd"*
+
+### 4.8(L1) Ensure the Exception users list is properly configured
+To correct the membership of the Exception Users list, perform the following in the vSphere Web Client:
+1. Select the host.
+2. Click on Configure then expand System and select Security Profile.
+3. Select Edit next to Lockdown Mode.
+4. Click on Exception Users.
+5. Add or delete users as appropriate.
+6. Click OK.
+
+
+
 ## Issues or feature requests:
  If you have a setting that you would like to see in this please let me know
 
