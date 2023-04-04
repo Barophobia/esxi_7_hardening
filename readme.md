@@ -1,4 +1,4 @@
-#ESXI Hardening PowerCLI Script
+# ESXI Hardening PowerCLI Script
 
 ## Things to take into account before blindly running the script:
 
