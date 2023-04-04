@@ -37,9 +37,21 @@ Get-VMHost | Get-AdvancedSetting -Name Config.HostAgent.plugins.solo.enableMob |
 Get-VmHostSNMP | Set-VMHostSNMP -Enabled:$false
 
 #2.6(L1) Ensure dvfilter API is not configured if not used
-Get-VMHost HOST1 | Foreach { Set-AdvancedSetting -VMHost $_ -Name Net.DVFilterBindIpAddress -IPValue "" }
+Get-VMHost | Foreach { Set-AdvancedSetting -VMHost $_ -Name Net.DVFilterBindIpAddress -IPValue "" }
 
 #2.9(L2) Ensure VDS Health check is disabled
 Get-View -ViewType DistributedVirtualSwitch | ?{($_.config.HealthCheckConfig | ?{$_.enable -notmatch "False"})}| %{$_.UpdateDVSHealthCheckConfig(@((New-Object Vmware.Vim.VMwareDVSVlanMtuHealthCheckConfig -property @{enable=0}),(New-Object Vmware.Vim.VMwareDVSTeamingHealthCheckConfig -property @{enable=0})))}
+
+#4.2(L1) Ensure passwords are required to be complex
+Get-VMHost | Get-AdvancedSetting -Name Security.PasswordQualityControl | Set-AdvancedSetting -Value "retry=3 min=disabled,disabled,disabled,disabled,14"
+
+#4.3(L1) Ensure the maximum failed login attempts is set to 5
+Get-VMHost | Get-AdvancedSetting -Name Security.AccountLockFailures | Set-AdvancedSetting -Value 5
+
+#4.4(L1) Ensure account lockout is set to 15 minutes
+Get-VMHost | Get-AdvancedSetting -Name Security.AccountUnlockTime | Set-AdvancedSetting -Value 900
+
+#4.5(L1) Ensure previous 5 passwords are prohibited
+Get-VMHost | Get-AdvancedSetting Security.PasswordHistory | Set-AdvancedSetting -Value 5
 
 
