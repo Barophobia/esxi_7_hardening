@@ -12,11 +12,6 @@ Set-VMHostSnmp -AddTarget -TargetCommunity '<trapCommunity>' -TargetHost '<trapD
  - This script will NOT configure the internal ESXi firewall, if you want to do that you must do it through the web ui.
  - Certificates are not touched so if you don't want to use the self signed certificate then you must change them yourself. (It is recommended to keep a backup of the original certificates just incase they are required in the future)
 
-## Issues or feature requests:
- If you have a setting that you would like to see in this please let me know
-
- If you have an issue please create an issue on this repo and I will fix it.
-
 ## Recommended remediations that must be done manually:
 
 ### 2.7(L1) Ensure expired and revoked SSL certificates are removed from the ESXi server
@@ -50,3 +45,9 @@ Enable remote Dump Collector
 ```
 esxcli system coredump network set -e true
 ```
+
+## Issues or feature requests:
+ If you have a setting that you would like to see in this please let me know
+
+ If you have an issue please create an issue on this repo and I will fix it.
+
