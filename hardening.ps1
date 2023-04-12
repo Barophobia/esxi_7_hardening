@@ -54,4 +54,22 @@ Get-VMHost | Get-AdvancedSetting -Name Security.AccountUnlockTime | Set-Advanced
 #4.5(L1) Ensure previous 5 passwords are prohibited
 Get-VMHost | Get-AdvancedSetting Security.PasswordHistory | Set-AdvancedSetting -Value 5
 
+#5.1(L1) Ensure the DCUI timeout is set to 600 seconds or less
+Get-VMHost | Get-AdvancedSetting -Name UserVars.DcuiTimeOut | Set-AdvancedSetting -Value 600
+
+#5.2(L1) Ensure the ESXi Shell is disabled
+Get-VMHost | Get-VMHostService | Where { $_.key -eq "TSM" } | Set-VMHostService -Policy Off
+
+#5.3(L1) Ensure SSH is disabled
+Get-VMHost | Get-VMHostService | Where { $_.key -eq "TSM-SSH" } | Set-VMHostService -Policy Off
+
+#5.5(L1) Ensure Normal Lockdown Mode is enabled
+Get-VMHost | Foreach { $_.EnterLockdownMode() }
+
+#5.8(L1) Ensure idle ESXi shell and SSH sessions time out after 300 seconds or less
+Get-VMHost | Get-AdvancedSetting -Name 'UserVars.ESXiShellInteractiveTimeOut' | Set-AdvancedSetting -Value "300"
+
+#5.9(L1) Ensure the shell services timeout is set to 1 hour or less
+Get-VMHost | Get-AdvancedSetting -Name 'UserVars.ESXiShellTimeOut' | Set-AdvancedSetting -Value "3600"
+
 

@@ -10,9 +10,10 @@ Set-VMHostSnmp -AddTarget -TargetCommunity '<trapCommunity>' -TargetHost '<trapD
  ```
  Make sure you change the values inside the '<>' to the correct value.
  - This script will NOT configure the internal ESXi firewall, if you want to do that you must do it through the web ui.
- - Certificates are not touched so if you don't want to use the self signed certificate then you must change them yourself. (It is recommended to keep a backup of the original certificates just incase they are required in the future)
+ - Certificates are not touched so if you don't want to use the self signed certificate then you must change them yourself.(It is recommended to keep a backup of the original certificates just incase they are required in the future)
+ - Hosts are NOT put into lockdown mode
 
-## Recommended remediations that must be done manually:
+## Recommended remediations that must be done manually or are not completed by the script:
 
 ### 2.7(L1) Ensure expired and revoked SSL certificates are removed from the ESXi server
 
@@ -104,7 +105,86 @@ To correct the membership of the Exception Users list, perform the following in 
 5. Add or delete users as appropriate.
 6. Click OK.
 
+### 5.4(L1) Ensure CIM access is limited
+To limit CIM access, perform the following:
+1. Create a limited-privileged service account for CIM and other third-party applications.
+2. This account should access the system via vCenter.
+3. Give the account the CIM Interaction privilege only. This will enable the account
+to obtain a CIM ticket, which can then be used to perform both read and write CIM operations on the target host. If an account must connect to the host directly, this account must be granted the full "Administrator" role on the host. This is not recommended unless required by the monitoring software being used.
 
+Or run the following PowerCLI command:
+
+```
+New-VMHostAccount -ID ServiceUser -Password <password> -UserAccount
+```
+### 5.5/5.6(L1 & L2) Ensure Normal/Strict Lockdown mode is enabled
+To enable lockdown mode, perform the following from the vSphere web client:
+1. From the vSphere Web Client, select the host.
+2. Select Configure then expand System and select Security Profile.
+3. Across from Lockdown Mode click on Edit.
+4. Click the radio button for Normal or Strict.
+5. Click OK.
+
+### 5.7(L2) Ensure the SSH authorized_keys file is empty
+This isn't done by the script as you should be using SSH keys in a secure environment.
+To remove all keys from the authorized_keys file, perform the following:
+1. Logon to the ESXi shell as root or another admin user. SSH may need to be enabled first
+2. Edit the /etc/ssh/keys-root/authorized_keys file.
+3. Remove all keys from the file and save the file.
+
+### 5.10(L1) Ensure DCUI has a trusted users list for lockdown mode
+To set a trusted users list for DCUI, perform the following from the vSphere web client:
+1. From the vSphere Web Client, select the host.
+2. Click Configure then expand System.
+3. Select Advanced System Settings then click Edit.
+4. Enter DCUI.Access in the filter.
+5. Set the DCUI.Access attribute is set to a comma-separated list of the users who are allowed to override lockdown mode.
+
+### 5.11(L2) Ensure contents of exposed configuration files have not been modified.
+In a secure environment data integrity should be monitored and authorised people should have access to the required systems through an RBAC system. 
+
+Host profiles could be used to track configuration changes on hosts but they do not track everything.
+
+### 6.1(L1) Ensure bidirectional CHAP authentication for iSCSI traffic is enabled
+To enable bidirectional CHAP authentication for iSCSI traffic, perform the following:
+1. From the vSphere Web Client, select the host.
+2. Click Configure then expand Storage.
+3. Select Storage Adapters then select the iSCSI Adapter.
+4. Under Properties click on Edit next to Authentication.
+5. Next to Authentication Method select Use bidirectional CHAP from the dropdown.
+6. Specify the outgoing CHAP name.
+    • Make sure that the name you specify matches the name configured on the storage side.
+        o To set the CHAP name to the iSCSI adapter name, select "Use initiator name".
+        o To set the CHAP name to anything other than the iSCSI initiator name, deselect "Use initiator name" and type a name in the Name text box.
+7. Enter an outgoing CHAP secret to be used as part of authentication. Use the same secret as your storage side secret.
+8. Specify incoming CHAP credentials. Make sure your outgoing and incoming secrets do not match.
+9. Click OK.
+10. Click the second to last symbol labeled Rescan Adapter.
+
+### 6.2(L2) Ensure the uniqueness of CHAP authentication secrets for iSCSI traffic
+To change the values of CHAP secrets so they are unique, perform the following:
+1. From the vSphere Web Client, select the host.
+2. Click Configure then expand Storage.
+3. Select Storage Adapters then select the iSCSI Adapter.
+4. Under Properties click on Edit next to Authentication.
+5. Next to Authentication Method specify the authentication method from the dropdown.
+    o None
+    o Use unidirectional CHAP if required by target
+    o Use unidirectional CHAP unless prohibited by target
+    o Use unidirectional CHAP
+    o Use bidirectional CHAP
+6. Specify the outgoing CHAP name.
+    • Make sure that the name you specify matches the name configured on the storage side.
+        o To set the CHAP name to the iSCSI adapter name, select "Use initiator name".
+        o To set the CHAP name to anything other than the iSCSI initiator name, deselect "Use initiator name" and type a name in the Name text box.
+7. Enter an outgoing CHAP secret to be used as part of authentication. Use the same secret as your storage side secret.
+8. If configuring with bidirectional CHAP, specify incoming CHAP credentials.
+    • Make sure your outgoing and incoming secrets do not match.
+9. Click OK.
+10. Click the second to last symbol labeled Rescan Adapter
+
+# Create a new host user account -Host Local connection required-
+New-VMHostAccount -ID ServiceUser -Password <password> -UserAccount
 
 ## Issues or feature requests:
  If you have a setting that you would like to see in this please let me know
