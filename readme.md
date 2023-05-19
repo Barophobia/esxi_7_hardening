@@ -183,6 +183,39 @@ To change the values of CHAP secrets so they are unique, perform the following:
 9. Click OK.
 10. Click the second to last symbol labeled Rescan Adapter
 
+### 6.3(L1) Ensure SAN Resources are segregated properly
+SAN's should have restictive zoning to prevent misconfigurations that can occur.
+
+### 7.1(L1) Ensure the vSwitch Forged Transmits policy is set to reject
+This should be set to reject but can effect applications so an exception should be made for the port groups that require this.
+As this is different for everyone it is not included in the script.
+
+To set the policy:
+```
+esxcli network vswitch standard policy security set -v vSwitch2 -f false
+```
+Change the vswitch in the command to whatever is required.
+
+### 7.2(L1) Ensure the vSwitch MAC address change policy is set to reject
+This should be set to reject to stop bad actors.
+As this is different for everyone it is not included in the script.
+
+To set the policy:
+```
+esxcli network vswitch standard policy security set -v vSwitch2 -m false
+```
+
+### 7.3(L1) Ensure the vSwitch Promiscuous mode policy is set to reject
+There are legitimate reasons to leave this enabled. Some security devices required the ability to see all packets on a vSwitch.
+
+To set the policy:
+```
+esxcli network vswitch standard policy security set -v vSwitch2 -p false
+```
+
+### 7.4(L1) Ensure port groups are not configured to the value of the native LAN
+
+
 # Create a new host user account -Host Local connection required-
 New-VMHostAccount -ID ServiceUser -Password <password> -UserAccount
 
