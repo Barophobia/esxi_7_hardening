@@ -15,6 +15,15 @@ Set-VMHostSnmp -AddTarget -TargetCommunity '<trapCommunity>' -TargetHost '<trapD
 
 ## Recommended remediations that must be done manually or are not completed by the script:
 
+### 1.1(L1) Ensure ESXi is properly patched - 
+This should have a defined process in the environment and cannot be automated by this script.
+
+### 1.3 (L1) Ensure no unauthorized kernel modules are loaded on the host
+By default ESXi hosts do not permit the loading of kernel modules but this can be overridden - if you suspect unauthorized modules are being used, audit the kernel for any unsigned modules.
+
+### 2.2(L1) Ensure the ESXi host firewall is configured to restrict access to services running on the host.
+This cannot be automated - If you want to use the internal ESXi firewall do this thorugh the web client.
+
 ### 2.7(L1) Ensure expired and revoked SSL certificates are removed from the ESXi server
 
 ### 2.8(L1) Ensure vSphere Authentication Proxy is used when adding hosts to active directory
@@ -105,18 +114,6 @@ To correct the membership of the Exception Users list, perform the following in 
 5. Add or delete users as appropriate.
 6. Click OK.
 
-### 5.4(L1) Ensure CIM access is limited
-To limit CIM access, perform the following:
-1. Create a limited-privileged service account for CIM and other third-party applications.
-2. This account should access the system via vCenter.
-3. Give the account the CIM Interaction privilege only. This will enable the account
-to obtain a CIM ticket, which can then be used to perform both read and write CIM operations on the target host. If an account must connect to the host directly, this account must be granted the full "Administrator" role on the host. This is not recommended unless required by the monitoring software being used.
-
-Or run the following PowerCLI command:
-
-```
-New-VMHostAccount -ID ServiceUser -Password <password> -UserAccount
-```
 ### 5.5/5.6(L1 & L2) Ensure Normal/Strict Lockdown mode is enabled
 To enable lockdown mode, perform the following from the vSphere web client:
 1. From the vSphere Web Client, select the host.
@@ -186,41 +183,60 @@ To change the values of CHAP secrets so they are unique, perform the following:
 ### 6.3(L1) Ensure SAN Resources are segregated properly
 SAN's should have restictive zoning to prevent misconfigurations that can occur.
 
-### 7.1(L1) Ensure the vSwitch Forged Transmits policy is set to reject
-This should be set to reject but can effect applications so an exception should be made for the port groups that require this.
-As this is different for everyone it is not included in the script.
-
-To set the policy:
-```
-esxcli network vswitch standard policy security set -v vSwitch2 -f false
-```
-Change the vswitch in the command to whatever is required.
-
-### 7.2(L1) Ensure the vSwitch MAC address change policy is set to reject
-This should be set to reject to stop bad actors.
-As this is different for everyone it is not included in the script.
-
-To set the policy:
-```
-esxcli network vswitch standard policy security set -v vSwitch2 -m false
-```
-
-### 7.3(L1) Ensure the vSwitch Promiscuous mode policy is set to reject
-There are legitimate reasons to leave this enabled. Some security devices required the ability to see all packets on a vSwitch.
-
-To set the policy:
-```
-esxcli network vswitch standard policy security set -v vSwitch2 -p false
-```
-
 ### 7.4(L1) Ensure port groups are not configured to the value of the native LAN
+To stop using the native VLAN ID for port groups, perform the following:
+1. From the vSphere Web Client, select the host.
+2. Click Configure then expand Networking.
+3. Select Virtual switches.
+4. Expand the Standard vSwitch.
+5. View the topology diagram of the switch, which shows the various port groups
+associated with that switch.
+6. For each port group on the vSwitch, verify and record the VLAN IDs used.
+7. If a VLAN ID change is needed, click the name of the port group in the topology
+diagram of the virtual switch.
+8. Click the Edit settings option.
+9. In the Properties section, enter an appropriate name in the Network label field.
+10. In the VLAN ID dropdown select or type a new VLAN.
+11. Click OK
 
+### 7.5(L1) Ensure port groups are not configured to VLAN values reserved by upstream physical switches
+To change the VLAN values for port groups to non-reserved values, perform the following:
 
-# Create a new host user account -Host Local connection required-
-New-VMHostAccount -ID ServiceUser -Password <password> -UserAccount
+1. From the vSphere Web Client, select the host.
+2. Click Configure then expand Networking.
+3. Select Virtual switches.
+4. Expand the Standard vSwitch.
+5. View the topology diagram of the switch, which shows the various port groups
+associated with that switch.
+6. For each port group on the vSwitch, verify and record the VLAN IDs used.
+Page 111
+7. If a VLAN ID change is needed, click the name of the port group in the topology
+diagram of the virtual switch.
+8. Click the Edit settings option.
+9. In the Properties section, enter an appropriate name in the Network label field.
+10. In the VLAN ID dropdown select or type a new VLAN.
+11. Click OK.
+
+### 7.6 (L1) Ensure port groups are not configured to VLAN 4095 and 0 except for Virtual Guest Tagging (VGT)
+To set port groups to values other than 4095 and 0 unless VGT is required, perform the following:
+
+1. From the vSphere Web Client, select the host.
+2. Click Configure then expand Networking.
+3. Select Virtual switches.
+4. Expand the Standard vSwitch.
+5. View the topology diagram of the switch, which shows the various port groups
+associated with that switch.
+Page 113
+6. For each port group on the vSwitch, verify and record the VLAN IDs used.
+7. If a VLAN ID change is needed, click the name of the port group in the topology
+diagram of the virtual switch.
+8. Click the Edit settings option.
+9. In the Properties section, enter an appropriate name in the Network label field.
+10. In the VLAN ID dropdown select or type a new VLAN.
+11. Click OK
 
 ## Issues or feature requests:
  If you have a setting that you would like to see in this please let me know
 
- If you have an issue please create an issue on this repo and I will fix it.
+ If you have an issue please create an issue or PR and I will fix it.
 
