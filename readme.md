@@ -16,6 +16,7 @@ Set-VMHostSnmp -AddTarget -TargetCommunity '<trapCommunity>' -TargetHost '<trapD
 <details open>
 <summary>General (Section 1)</summary>
 <br>
+
 ### 1.1(L1) Ensure ESXi is properly patched - 
 This should have a defined process in the environment and cannot be automated by this script.
 
