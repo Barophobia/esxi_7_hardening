@@ -368,6 +368,7 @@ When a VMDK is configured in Independent Persistent Mode, what you will see is t
 When a VMDK is configured as Independent Non-persistent Mode, a redo log is created to capture all subsequent writes to that disk. However, if the snapshot is deleted, or the virtual machine is powered off, the changes captured in that redo log are discarded for that Independent Non-persistent VMDK.
 
 **OPTIONS**
+
 Dependant
 
 IndependentPersistent
