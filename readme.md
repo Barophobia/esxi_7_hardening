@@ -289,7 +289,7 @@ Using the vSphere Web Client:
 
 </details>
 
-<details><summary>Virtual Machines</summary>
+<details><summary>Virtual Machines (Section 8)</summary>
 
 ### 8.2.3 (L1) Ensure unnecessary parallel ports are disconnected
 The VM must be powered off in order to remove a parallel device.
