@@ -1,7 +1,7 @@
 # ESXi Hardening using PowerCLI for a single server.
 
 #Used to connect to the host
-$Host = Read-Host 'ESXi IP: '
+$ESXHost = Read-Host 'ESXi IP: '
 $HostUser = Read-Host 'Host User: '
 $HostPass = Read-Host 'User Password: ' -AsSecureString
 
@@ -13,7 +13,7 @@ $NTPServer2 = Read-Host 'Set Secondary NTP Server (Set as 0.0.0.0 if secondary n
 $serviceuserpass = Read-Host 'Set password for service user account' -AsSecureString
 
 #Connect to the ESXi Host
-Connect-VIServer -Server $Host -User $HostUser -Password $HostPass
+Connect-VIServer -Server $ESXHost -User $HostUser -Password $HostPass
 
 #1.2 (L1) Ensure the image profile VIB acceptance level is configured properly
 Foreach ($VMHost in Get-VMHost ) {
