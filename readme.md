@@ -289,6 +289,77 @@ Using the vSphere Web Client:
 
 </details>
 
+<details><summary>Virtual Machines</summary>
+
+### 8.2.3 (L1) Ensure unnecessary parallel ports are disconnected
+The VM must be powered off in order to remove a parallel device.
+From the vSphere Client select the Virtual Machine right click and go to Edit Settings. Select the parallel device and click remove then OK. 
+
+### 8.2.4 (L1) Ensure unnecessary serial ports are disconnected
+The VM must be powered off in order to remove a parallel device.
+From the vSphere Client select the Virtual Machine right click and go to Edit Settings. Select the serial device and click remove then OK. 
+
+### 8.3.1 (L1) Ensure unnecessary or superfluous functions inside VMs are disabled
+To disable unneeded functions, perform whichever of the following steps are applicable:
+
+1. Disable unused services in the operating system.
+2. Disconnect unused physical devices, such as CD/DVD drives, floppy drives, and
+USB adaptors.
+3. Turn off any screen savers.
+4. If using a Linux, BSD, or Solaris guest operating system, do not run the X
+Windows system unless it is necessary
+
+### 8.3.2 (L1) Ensure use of the VM console is limited
+To properly limit use of the VM console, perform the following steps:
+
+1. From within vCenter select Menu go to Administration then Roles.
+2. Create a custom role then choose the pencil icon to edit the new role.
+3. Give the appropriate permissions.
+4. View the usage and privileges as required.
+5. Remove any default Admin or Power User roles then assign the new custom roles as needed.
+
+### 8.3.3 (L1) Ensure secure protocols are used for virtual serial port access
+To configure all virtual serial ports to use secure protocols, change any protocols that are not secure to one of the following:
+- ssl - the equivalent of TCP+SSL
+- tcp+ssl - SSL over TCP over IPv4 or IPv6
+- tcp4+ssl - SSL over TCP over IPv4
+- tcp6+ssl - SSL over TCP over IPv6
+- telnets - telnet over SSL over TCP
+
+### 8.3.4 (L1) Ensure standard processes are used for VM deployment
+Create documentation and a standard process for the method for VM deployment. If utilizing templates in VMware create the templates, document the process for using them as well as keeping them up-to-date, then ensure the process is followed accordingly through periodic review.
+
+
+### 8.4.1 (L1) Ensure access to VMs through the dvfilter network APIs is configured correctly
+To edit a powered-down virtual machine's .vmx file, first remove it from vCenter Server's inventory. Manual additions to the .vmx file from ESXi will be overwritten by any registered entries stored in the vCenter Server database. Make a backup copy of the .vmx file. If the edit breaks the virtual machine, it can be rolled back to the original version of the file.
+
+Open the vSphere/VMware Infrastructure (VI) Client and log in with appropriate credentials. If connecting to vCenter Server, click on the desired host. Click the Configuration tab. Click Storage. Right-click on the appropriate datastore and click Browse Datastore. Navigate to the folder named after the virtual machine, and locate the .vmx file. Right-click the .vmx file and click Remove from inventory.
+
+Temporarily disable Lockdown Mode and enable the ESXi Shell via the vSphere Client. Open the vSphere/VMware Infrastructure (VI) Client and log in with appropriate credentials. If connecting to vCenter Server, click on the desired host. Click the Configuration tab. Click Software, Security Profile, Services, Properties, ESXi Shell, and Options, respectively. Start the ESXi Shell service, where/as required. As root, log in to the ESXi host and locate the VM's vmx file.
+
+```
+find / | grep vmx
+```
+
+Add the following to the VM's vmx file.
+
+ethernet0.filter1.name = dv-filter1
+
+Where "ethernet0" is the network adaptor interface of the virtual machine that is to be protected, "filter1" is the number of the filter that is being used, and "dv-filter1" is the name of the particular data path kernel module that is protecting the VM.
+
+Re-enable Lockdown Mode on the host.
+
+Re-register the VM with the vCenter Server. Open the vSphere/VMware Infrastructure (VI) Client and log in with appropriate credentials. If connecting to vCenter Server, click on the desired host. Click the Configuration tab. Click Storage. Right-click on the appropriate datastore and click Browse Datastore. Navigate to the folder named after the virtual machine, and locate the .vmx file. Right-click the .vmx file and click Add to inventory. The Add to Inventory wizard opens. Continue to follow the wizard to add the virtual machine. 
+
+
+### 8.5.1 (L2) Ensure VM limits are configured correctly
+To configure VM limits correctly, do all of the following that are applicable:
+1. Use shares or reservations to guarantee resources to critical VMs.
+2. Use limits to constrain resource consumption by VMs that have a greater risk of being exploited or attacked, or that run applications that are known to have the potential to greatly consume resources.
+3. Use resource pools to guarantee resources to a common group of critical VMs
+
+</details>
+
 ## Issues or feature requests:
  If you have a setting that you would like to see in this please let me know
 
