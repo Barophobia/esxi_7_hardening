@@ -1,7 +1,7 @@
 # ESXi Hardening using PowerCLI
 
 $NTPServer1 = Read-Host 'Set Primary NTP Server'
-$NTPServer2 = Read-Host 'Set Secondary NTP Server (Leave blank if not required)'
+$NTPServer2 = Read-Host 'Set Secondary NTP Server (Set as 0.0.0.0 if secondary not required)'
 
 $serviceuserpass = Read-Host 'Set password for service user account' -AsSecureString
 
@@ -15,14 +15,14 @@ Foreach ($VMHost in Get-VMHost ) {
 Get-VMHost | Get-AdvancedSetting -Name Mem.ShareForceSalting | Set-AdvancedSetting -Value 2
 
 #2.1(L1) Ensure NTP time synchronization is configured properly
-$NTPServers = '$NTPServer1', '$NTPServer2'
+#Start NTP client service and set to automatic
+Get-VMHost | Get-VmHostService | Where-Object {$_.key -eq “ntpd”} | Start-VMHostService
+
+$NTPServers = "$NTPServer1", "$NTPServer2"
 Get-VMHost | Add-VmHostNtpServer $NTPServers
 
 #2.3(L1) Ensure Managed Object Browser (MOB) is disabled 
 Get-VMHost | Get-AdvancedSetting -Name Config.HostAgent.plugins.solo.enableMob | Set-AdvancedSetting -value "false"
-
-#2.4(L2) Ensure default self-signed certificate for ESXi communication is not used
-# To change the Cert replace the self signed certificate with your own, it is recommended to rename the current certificates and keep them just incase you need them in the future.
 
 #2.5(L1) Ensure SNMP is configured properly
 Get-VmHostSNMP | Set-VMHostSNMP -Enabled:$false

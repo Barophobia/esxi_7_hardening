@@ -24,6 +24,9 @@ By default ESXi hosts do not permit the loading of kernel modules but this can b
 ### 2.2(L1) Ensure the ESXi host firewall is configured to restrict access to services running on the host.
 This cannot be automated - If you want to use the internal ESXi firewall do this thorugh the web client.
 
+#2.4(L2) Ensure default self-signed certificate for ESXi communication is not used
+# To change the Cert replace the self signed certificate with your own, it is recommended to rename the current certificates and keep them just incase you need them in the future.
+
 ### 2.7(L1) Ensure expired and revoked SSL certificates are removed from the ESXi server
 
 ### 2.8(L1) Ensure vSphere Authentication Proxy is used when adding hosts to active directory
@@ -234,6 +237,19 @@ diagram of the virtual switch.
 9. In the Properties section, enter an appropriate name in the Network label field.
 10. In the VLAN ID dropdown select or type a new VLAN.
 11. Click OK
+
+### 7.7 (L1) Ensure Virtual Distributed Switch Netflow traffic is sent to an authorized collector
+Using the vSphere Web Client:
+
+1. Go to the Networking section of vCenter
+2. After selecting each individual switch you will need to perform the following.
+3. Go to Configure then expand Settings.
+4. Click on Netflow.
+5. Click on Edit.
+6. Enter the Collector IP address and Collector port as required.
+7. Click OK.
+
+
 
 ## Issues or feature requests:
  If you have a setting that you would like to see in this please let me know
