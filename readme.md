@@ -13,7 +13,7 @@ Set-VMHostSnmp -AddTarget -TargetCommunity '<trapCommunity>' -TargetHost '<trapD
  - Hosts are NOT put into lockdown mode
 
 ## Recommended remediations that must be done manually or are not completed by the script:
-<details open>
+<details>
 <summary>General (Section 1)</summary>
 <br>
 
@@ -25,7 +25,7 @@ By default ESXi hosts do not permit the loading of kernel modules but this can b
 
 </details>
 
-<details open>
+<details>
 <summary>Communication (Section 2)</summary>
 <br>
 
@@ -58,7 +58,7 @@ To properly set the vSphere Authentication Proxy via Host Profiles:
 
 </details>
 
-<details open>
+<details>
 <summary>Logging (Section 3)</summary>
 <br>
 
@@ -91,7 +91,7 @@ Make sure you change the '<NewLocation>'.
 
 </details>
 
-<details open>
+<details>
 <summary>Access (Section 4)</summary>
 <br>
 
@@ -139,7 +139,7 @@ To correct the membership of the Exception Users list, perform the following in 
 
 </details>
 
-<details open>
+<details>
 <summary>Console (Section 5)</summary>
 <br>
 
@@ -173,7 +173,7 @@ Host profiles could be used to track configuration changes on hosts but they do 
 
 </details>
 
-<details open>
+<details>
 <summary>Storage (Section 6)</summary>
 <br>
 
@@ -220,7 +220,7 @@ SAN's should have restictive zoning to prevent misconfigurations that can occur.
 
 </details>
 
-<details open>
+<details>
 <summary>vNetwork (Section 7)</summary>
 <br>
 
