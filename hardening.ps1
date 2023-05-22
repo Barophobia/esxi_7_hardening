@@ -1,12 +1,9 @@
 # ESXi Hardening using PowerCLI
 
-#README:
-#Variables that may need changing:
-#   - Line 22 - NTP Servers, if you are using local NTP Change the values inside the qoutation marks to your IP/Hostname for NTP
-#
+$NTPServer1 = Read-Host 'Set Primary NTP Server'
+$NTPServer2 = Read-Host 'Set Secondary NTP Server (Leave blank if not required)'
 
-#1.1 (L1) Ensure ESXi is properly patched - 
-#   This should have a defined process in the environment and cannot be automated by this script.
+$serviceuserpass = Read-Host 'Set password for service user account' -AsSecureString
 
 #1.2 (L1) Ensure the image profile VIB acceptance level is configured properly
 Foreach ($VMHost in Get-VMHost ) {
@@ -14,18 +11,12 @@ Foreach ($VMHost in Get-VMHost ) {
  $ESXCli.software.acceptance.Set("PartnerSupported")
 }
 
-#1.3 (L1) Ensure no unauthorized kernel modules are loaded on the host
-# By default ESXi hosts do not permit the loading of kernel modules but this can be overridden - if you suspect unauthorized modules are being used, audit the kernel for any unsigned modules.
-
 #1.4(L2) Ensure the default alue of individual salt per vm is configured
 Get-VMHost | Get-AdvancedSetting -Name Mem.ShareForceSalting | Set-AdvancedSetting -Value 2
 
 #2.1(L1) Ensure NTP time synchronization is configured properly
-$NTPServers = "pool.ntp.org", "pool2.ntp.org"
+$NTPServers = '$NTPServer1', '$NTPServer2'
 Get-VMHost | Add-VmHostNtpServer $NTPServers
-
-#2.2(L1) Ensure the ESXi host firewall is configured to restrict access to services running on the host.
-# This cannot be automated - If you want to use the internal ESXi firewall do this thorugh the web client.
 
 #2.3(L1) Ensure Managed Object Browser (MOB) is disabled 
 Get-VMHost | Get-AdvancedSetting -Name Config.HostAgent.plugins.solo.enableMob | Set-AdvancedSetting -value "false"
@@ -63,8 +54,8 @@ Get-VMHost | Get-VMHostService | Where { $_.key -eq "TSM" } | Set-VMHostService 
 #5.3(L1) Ensure SSH is disabled
 Get-VMHost | Get-VMHostService | Where { $_.key -eq "TSM-SSH" } | Set-VMHostService -Policy Off
 
-#5.5(L1) Ensure Normal Lockdown Mode is enabled
-Get-VMHost | Foreach { $_.EnterLockdownMode() }
+#5.4(L1) Ensure CIM access is limited
+New-VMHostAccount -ID ServiceUser -Password $serviceuserpass -UserAccount
 
 #5.8(L1) Ensure idle ESXi shell and SSH sessions time out after 300 seconds or less
 Get-VMHost | Get-AdvancedSetting -Name 'UserVars.ESXiShellInteractiveTimeOut' | Set-AdvancedSetting -Value "300"
@@ -72,4 +63,17 @@ Get-VMHost | Get-AdvancedSetting -Name 'UserVars.ESXiShellInteractiveTimeOut' | 
 #5.9(L1) Ensure the shell services timeout is set to 1 hour or less
 Get-VMHost | Get-AdvancedSetting -Name 'UserVars.ESXiShellTimeOut' | Set-AdvancedSetting -Value "3600"
 
+#5.10(L1) Ensure DCUI has a trusted users list for lockdown mode
+Get-VMHost | Get-AdvancedSetting -Name 'DCUI.Access' | Set-AdvancedSetting -Value "root"
 
+#7.1(L1) Ensure the vSwitch Forged Transmits policy is set to reject
+Get-VirtualSwitch | Get-SecurityPolicy | Set-SecurityPolicy -ForgedTransmits $false
+Get-VirtualPortGroup | Get-SecurityPolicy | Set-SecurityPolicy -AllowPromiscuousInherited $true
+
+#7.2(L1) Ensure the vSwitch MAC Address Change policy is set to reject
+Get-VirtualSwitch | Get-SecurityPolicy | Set-SecurityPolicy -MacChanges $false
+Get-VirtualPortGroup | Get-SecurityPolicy | Set-SecurityPolicy -MacChangesInherited $true 
+
+#7.3(L Ensure the vSwitch Promiscuous Mode policy is set to reject
+Get-VirtualSwitch | Get-SecurityPolicy | Set-SecurityPolicy -AllowPromiscuous $false
+Get-VirtualPortGroup | Get-SecurityPolicy | Set-SecurityPolicy -AllowPromiscuousInherited $true 
