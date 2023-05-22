@@ -2,7 +2,6 @@
 
 ## Things to take into account before blindly running the script:
 
- - you may need to change the NTP variables in the script if you want to use a specific ntp server, this can be done in line 24.
  - This script DISABLES snmp, if this is required change line 37 to:
  ```
 Get-VmHostSNMP | Set-VMHostSNMP -Enabled:$true -ReadOnlyCommunity '<secret>'
@@ -14,12 +13,16 @@ Set-VMHostSnmp -AddTarget -TargetCommunity '<trapCommunity>' -TargetHost '<trapD
  - Hosts are NOT put into lockdown mode
 
 ## Recommended remediations that must be done manually or are not completed by the script:
-
+<details open>
+<summary>General (Section 1)</summary>
+<br>
 ### 1.1(L1) Ensure ESXi is properly patched - 
 This should have a defined process in the environment and cannot be automated by this script.
 
 ### 1.3 (L1) Ensure no unauthorized kernel modules are loaded on the host
 By default ESXi hosts do not permit the loading of kernel modules but this can be overridden - if you suspect unauthorized modules are being used, audit the kernel for any unsigned modules.
+
+</details>
 
 ### 2.2(L1) Ensure the ESXi host firewall is configured to restrict access to services running on the host.
 This cannot be automated - If you want to use the internal ESXi firewall do this thorugh the web client.
