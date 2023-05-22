@@ -25,11 +25,15 @@ By default ESXi hosts do not permit the loading of kernel modules but this can b
 
 </details>
 
+<details open>
+<summary>Communication (Section 2)</summary>
+<br>
+
 ### 2.2(L1) Ensure the ESXi host firewall is configured to restrict access to services running on the host.
 This cannot be automated - If you want to use the internal ESXi firewall do this thorugh the web client.
 
-#2.4(L2) Ensure default self-signed certificate for ESXi communication is not used
-# To change the Cert replace the self signed certificate with your own, it is recommended to rename the current certificates and keep them just incase you need them in the future.
+### 2.4(L2) Ensure default self-signed certificate for ESXi communication is not used
+To change the Cert replace the self signed certificate with your own, it is recommended to rename the current certificates and keep them just incase you need them in the future.
 
 ### 2.7(L1) Ensure expired and revoked SSL certificates are removed from the ESXi server
 
@@ -51,6 +55,8 @@ To properly set the vSphere Authentication Proxy via Host Profiles:
 5. Select Active Directory configuration.
 6. Set the JoinDomain Method is configured to Use vSphere Authentication Proxy to add the host to the domain.
 7. Click on Save.
+
+</details>
 
 ### 3.1(L1) Ensure a centralised location is configured to collect ESXi host core dumps
 Configure remote Dump Collector Server
