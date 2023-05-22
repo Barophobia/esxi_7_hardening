@@ -58,6 +58,10 @@ To properly set the vSphere Authentication Proxy via Host Profiles:
 
 </details>
 
+<details open>
+<summary>Logging (Section 3)</summary>
+<br>
+
 ### 3.1(L1) Ensure a centralised location is configured to collect ESXi host core dumps
 Configure remote Dump Collector Server
 ```
@@ -84,6 +88,12 @@ PowerCli:
 Get-VMHost | Foreach { Set-AdvancedSetting -VMHost $_ -Name Syslog.global.logHost -Value "<NewLocation>" }
 ```
 Make sure you change the '<NewLocation>'.
+
+</details>
+
+<details open>
+<summary>Access (Section 4)</summary>
+<br>
 
 ### 4.1(L1) Ensure a non-root user account exists for local admin access
 To create one or more named user accounts (local ESXi user accounts), perform the following using the vSphere client (not the vSphere web client) for each ESXi host:
@@ -127,6 +137,12 @@ To correct the membership of the Exception Users list, perform the following in 
 5. Add or delete users as appropriate.
 6. Click OK.
 
+</details>
+
+<details open>
+<summary>Console (Section 5)</summary>
+<br>
+
 ### 5.5/5.6(L1 & L2) Ensure Normal/Strict Lockdown mode is enabled
 To enable lockdown mode, perform the following from the vSphere web client:
 1. From the vSphere Web Client, select the host.
@@ -154,6 +170,12 @@ To set a trusted users list for DCUI, perform the following from the vSphere web
 In a secure environment data integrity should be monitored and authorised people should have access to the required systems through an RBAC system. 
 
 Host profiles could be used to track configuration changes on hosts but they do not track everything.
+
+</details>
+
+<details open>
+<summary>Storage (Section 6)</summary>
+<br>
 
 ### 6.1(L1) Ensure bidirectional CHAP authentication for iSCSI traffic is enabled
 To enable bidirectional CHAP authentication for iSCSI traffic, perform the following:
@@ -195,6 +217,12 @@ To change the values of CHAP secrets so they are unique, perform the following:
 
 ### 6.3(L1) Ensure SAN Resources are segregated properly
 SAN's should have restictive zoning to prevent misconfigurations that can occur.
+
+</details>
+
+<details open>
+<summary>vNetwork (Section 7)</summary>
+<br>
 
 ### 7.4(L1) Ensure port groups are not configured to the value of the native LAN
 To stop using the native VLAN ID for port groups, perform the following:
@@ -259,7 +287,7 @@ Using the vSphere Web Client:
 6. Enter the Collector IP address and Collector port as required.
 7. Click OK.
 
-
+</details>
 
 ## Issues or feature requests:
  If you have a setting that you would like to see in this please let me know
