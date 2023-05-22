@@ -181,9 +181,6 @@ Get-VM | New-AdvancedSetting -Name "isolation.tools.paste.disable" -value $true
 # 8.5.2 (L2) Ensure hardware-based 3D acceleration is disabled
 Get-VM | New-AdvancedSetting -Name "mks.enable3d" -value $false
 
-# 8.6.1 (L2) Ensure nonpersistent disks are limited
-Get-VM | Get-HardDisk | Set-HardDisk -Persistence IndependentPersistent
-
 # 8.6.2 (L1) Ensure virtual disk shrinking is disabled
 Get-VM | New-AdvancedSetting -Name "isolation.tools.diskShrink.disable" -value $true
 

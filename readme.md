@@ -358,6 +358,26 @@ To configure VM limits correctly, do all of the following that are applicable:
 2. Use limits to constrain resource consumption by VMs that have a greater risk of being exploited or attacked, or that run applications that are known to have the potential to greatly consume resources.
 3. Use resource pools to guarantee resources to a common group of critical VMs
 
+### 8.6.1 (L2) Ensure nonpersistent disks are limited
+**Independent Persistent Mode**
+
+When a VMDK is configured in Independent Persistent Mode, what you will see is that no delta file is associated with this disk during a snapshot operation. In other words, during a snapshot operation, this VMDK continues to behave as if there is no snapshot being taken of the virtual machine and all writes go directly to disk. So there is no delta file created when a snapshot of the VM is taken, but all changes to the disk are preserved when the snapshot is deleted.
+
+**Independent Non-persistent Mode**
+
+When a VMDK is configured as Independent Non-persistent Mode, a redo log is created to capture all subsequent writes to that disk. However, if the snapshot is deleted, or the virtual machine is powered off, the changes captured in that redo log are discarded for that Independent Non-persistent VMDK.
+
+**OPTIONS**
+Dependant
+
+IndependentPersistent
+
+IndependentNonPersistent
+
+```
+Get-VM | Get-HardDisk | Set-HardDisk -Persistence OPTION
+```
+
 </details>
 
 ## Issues or feature requests:
